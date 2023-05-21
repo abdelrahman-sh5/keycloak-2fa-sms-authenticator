@@ -1,10 +1,17 @@
 package dasniko.keycloak.authenticator;
 
 import dasniko.keycloak.authenticator.gateway.SmsServiceFactory;
-import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
+/* ================================================= */
+/* Search For New Ones */
+
+import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.common.util.SecretGenerator;
+
+/* ================================================= */
+
+import org.jboss.logging.Logger;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
@@ -15,12 +22,14 @@ import org.keycloak.theme.Theme;
 
 import javax.ws.rs.core.Response;
 import java.util.Locale;
+import static org.keycloak.forms.account.AccountPages.LOG;
 
 /**
  * @author Niko Köbler, https://www.n-k.de, @dasniko
  */
 public class SmsAuthenticator implements Authenticator {
 
+        private static final Logger LOG = Logger.getLogger(SmsServiceFactory.class);
 	private static final String MOBILE_NUMBER_FIELD = "mobile_number";
 	private static final String TPL_CODE = "login-sms.ftl";
 
@@ -29,15 +38,16 @@ public class SmsAuthenticator implements Authenticator {
 		AuthenticatorConfigModel config = context.getAuthenticatorConfig();
 		KeycloakSession session = context.getSession();
 		UserModel user = context.getUser();
-
+                   
 		String mobileNumber = user.getFirstAttribute(MOBILE_NUMBER_FIELD);
 		// mobileNumber of course has to be further validated on proper format, country code, ...
 
 		int length = Integer.parseInt(config.getConfig().get("length"));
 		int ttl = Integer.parseInt(config.getConfig().get("ttl"));
-
+//                 String code = "54687";
 		String code = SecretGenerator.getInstance().randomString(length, SecretGenerator.DIGITS);
-		AuthenticationSessionModel authSession = context.getAuthenticationSession();
+                LOG.warn(String.format("***** test Code ***** Would send SMS to %s", code));
+                AuthenticationSessionModel authSession = context.getAuthenticationSession();
 		authSession.setAuthNote("code", code);
 		authSession.setAuthNote("ttl", Long.toString(System.currentTimeMillis() + (ttl * 1000L)));
 
@@ -60,7 +70,7 @@ public class SmsAuthenticator implements Authenticator {
 	@Override
 	public void action(AuthenticationFlowContext context) {
 		String enteredCode = context.getHttpRequest().getDecodedFormParameters().getFirst("code");
-
+//                String enteredCode = "54687";
 		AuthenticationSessionModel authSession = context.getAuthenticationSession();
 		String code = authSession.getAuthNote("code");
 		String ttl = authSession.getAuthNote("ttl");
