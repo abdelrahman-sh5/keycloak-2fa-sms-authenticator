@@ -44,10 +44,10 @@ public class SmsAuthenticator implements Authenticator {
 
 		int length = Integer.parseInt(config.getConfig().get("length"));
 		int ttl = Integer.parseInt(config.getConfig().get("ttl"));
-//                 String code = "54687";
-		String code = SecretGenerator.getInstance().randomString(length, SecretGenerator.DIGITS);
-                LOG.warn(String.format("***** test Code ***** Would send SMS to %s", code));
-                AuthenticationSessionModel authSession = context.getAuthenticationSession();
+		String code = "54687";
+		// String code = SecretGenerator.getInstance().randomString(length, SecretGenerator.DIGITS);
+		LOG.warn(String.format("***** test Code ***** Would send SMS to %s", code));
+		AuthenticationSessionModel authSession = context.getAuthenticationSession();
 		authSession.setAuthNote("code", code);
 		authSession.setAuthNote("ttl", Long.toString(System.currentTimeMillis() + (ttl * 1000L)));
 
@@ -69,8 +69,8 @@ public class SmsAuthenticator implements Authenticator {
 
 	@Override
 	public void action(AuthenticationFlowContext context) {
-		String enteredCode = context.getHttpRequest().getDecodedFormParameters().getFirst("code");
-//                String enteredCode = "54687";
+		// String enteredCode = context.getHttpRequest().getDecodedFormParameters().getFirst("code");
+		String enteredCode = "54687";
 		AuthenticationSessionModel authSession = context.getAuthenticationSession();
 		String code = authSession.getAuthNote("code");
 		String ttl = authSession.getAuthNote("ttl");
